@@ -1,45 +1,32 @@
-// Every function object in javascript comes with a .prototype member object
-// automatically. This can be used as syntactic sugar for the .methods
-// object we created earlier when constructing objects. We simply delegate
-// to Car.prototype, and since Car.prototype will be created by the
-// interpreter, we can get rid of the object-creation brackets when we
-// define the .move member.
-var Car = function() {
-	var obj = Object.create(Car.prototype);
-	obj.loc = 0;
-
-	return obj;
+// When we use the keyword "new" to create an object, some code is inserted
+// at the beginning and end of our function to set up the delegation and
+// return the resulting object. This allows us to exclude those lines
+// from our constructor function. The injected code sets up the parameter
+// "this" to take the place of the object we called "obj" before.
+var Car = function(initialLoc) {
+	this.loc = initialLoc;
 };
 
 Car.prototype.move = function() {
 	this.loc++;
 };
 
-amy = Car();
+var SportsCar = function(initialLoc) {
+	Car.call(this, initialLoc);
+};
+
+SportsCar.prototype = Object.create(Car.prototype);
+SportsCar.prototype.constructor = SportsCar;
+SportsCar.prototype.moveFast = function() {
+	this.loc += 2;
+};
+
+amy = new SportsCar(1);
 console.log("amy = ", amy);
 console.log("amy.constructor = ", amy.constructor);
 console.log("amy instanceof Car ?", (amy instanceof Car));
-
-// In this example, although we are calling the OtherCar function to
-// create an object which is assigned to the "other" variable, the
-// expression "other instanceof OtherCar" will return false. That is
-// because "other" is just an object that happened to be built
-// within the OtherCar function. It is not actually set up to delegate
-// to the OtherCar prototype. To make this expression evaluate true,
-// uncomment the line in which we set up the delegation using
-// Object.create.
-var OtherCar = function() {
-	var obj = {};
-	//obj = Object.create(OtherCar.prototype);
-	obj.thing = "thingValue";
-
-	return obj;
-};
-var other = OtherCar();
-console.log("other instanceof OtherCar ?", (other instanceof OtherCar));
-
-// We can show that the setup of delegation is the important part, and not
-// the actual function called to construct a variable, with the following:
-var otherCarDelegatedManually = Object.create(OtherCar.prototype);
-console.log("otherCarDelegatedManually instanceof OtherCar ?",
-		(otherCarDelegatedManually instanceof OtherCar));
+console.log("amy instanceof SportsCar ?", (amy instanceof SportsCar));
+amy.move();
+console.log("amy = ", amy);
+amy.moveFast();
+console.log("amy = ", amy);
