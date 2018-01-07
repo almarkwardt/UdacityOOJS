@@ -1,15 +1,21 @@
-// As it turns out, the previous implementation of the object decorator
-// (in which we created a new object every time carlike was called) is
-// actually what would be considered a class constructor in javascript.
+// We can define a Car.methods object which contains all of the methods we
+// want a Car to have. Once we do that, we can use Object.create during
+// the creation of a Car object to ensure that anything not found in the
+// object itself is delegated to Car.methods.
 var Car = function() {
-	var obj = {};
+	var obj = Object.create(Car.methods);
 	obj.loc = 0;
-	obj.move = function() {
-		obj.loc++
-	};
 
 	return obj;
 };
 
+Car.methods = {
+	move: function() {
+				 this.loc++;
+			 }
+};
+
 amy = Car();
+console.log("amy = ", amy);
+amy.move();
 console.log("amy = ", amy);
