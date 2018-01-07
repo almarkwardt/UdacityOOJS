@@ -1,9 +1,11 @@
-// This implementation of carlike is very similar to the previous one, except
-// it assigns the move method to point to an internally-defined function.
-// By defining the move method internally, each instance of a carlike object
-// will have its own move() in memory, rather than a reference.
-var carlike = function() {
-	var obj = {};
+// In our previous implementation, the carlike() function wasn't exactly
+// a "decorator", in that it created an object from scratch and we assigned
+// that object to a variable. It did not extend or enhance an already-
+// existing object with additional functionality. We can change the
+// carlike() function to take an object parameter and extend that object
+// rather than create a new, blank object. This is where the "decoration"
+// comes in.
+var carlike = function(obj) {
 	obj.loc = 0;
 	obj.move = function() {
 		obj.loc++
@@ -12,23 +14,17 @@ var carlike = function() {
 	return obj;
 };
 
-// Create 2 carlike objects. They are still separate entities in memory,
-// so they should fail the triple equal comparison.
-amy = carlike();
-ben = carlike();
-console.log("Are amy and ben the same object? ", (amy === ben));
+// Create 2 carlike objects, but have them start off as non-empty objects
+// so that the carlike() function will truly "decorate" them.
+amy = carlike({"name":"amy"});
+ben = carlike({"name":"ben"});
 
-// They still start with the same value for location.
-console.log("Are their location values equivalent? ", (amy.loc == ben.loc));
+// We should see both objects with the initial member we gave them ("name")
+// plus the additional stuff that carlike() bolted on.
+console.log("amy = ", amy);
+console.log("ben = ", ben);
 
-// Now, because we define the move method within the carlike() function,
-// their move methods are now separate and will fail the triple equal
-// comparison.
-console.log("Are their move methods the same? ", (amy.move === ben.move));
-
-// Move Amy only, and we can show for sure that they are 2 separate entities
-// in memory.
+// All of our previous carlike functionality is still there.
 amy.move();
-console.log("Are their location values equivalent after amy moved? ",
-		(amy.loc == ben.loc));
-
+console.log("amy = ", amy);
+console.log("ben = ", ben);
